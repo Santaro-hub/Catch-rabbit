@@ -1,0 +1,19 @@
+{
+  "name": "rabbit-chase",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Catch the running rabbit, collect coins, and level up in this free mini game.",
+  "scripts": {
+    "android:add": "cap add android",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android",
+    "android:debug": "npm run android:sync && cd android && gradlew.bat assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0"
+  }
+}

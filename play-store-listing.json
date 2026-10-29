@@ -1,0 +1,11 @@
+{
+  "applicationId": "com.tacticaledge.rabbitchase",
+  "title": "Rabbit Chase",
+  "shortDescription": "Catch the rabbit, collect coins, and beat your best!",
+  "fullDescription": "The rabbit is quick. Are your reflexes quicker?\n\nCatch the hopping rabbit before it escapes, earn coins, and level up through increasingly challenging rounds. Build catch combos, unlock customizations, collect power-ups, and see how high you can score.\n\nFEATURES\n• Fast, touch-friendly 30-second rounds\n• Hopping rabbit with increasing difficulty\n• Coins, streaks, combos, and unlockable customizations\n• Personal best and game progress saved on your device\n• Play offline after installation\n\nRabbit Chase is a casual single-player mini game. It is not affiliated with or endorsed by Counter-Strike or Valve.",
+  "category": "Casual",
+  "privacyPolicyPath": "www/privacy.html",
+  "contactEmail": "imonrealone@gmail.com",
+  "iconSource": "www/icon.svg",
+  "releaseNotes": "Initial release."
+}

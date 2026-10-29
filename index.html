@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#07111b" />
+    <meta name="description" content="Catch a running rabbit, earn coins, and level up in a quick mobile game." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Rabbit Chase — Catch the Rabbit" />
+    <meta property="og:description" content="Catch the hopping rabbit, collect coins, and beat your best score in this free mini game." />
+    <title>Catch the Rabbit | Tap to Play</title>
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient-scene" aria-hidden="true">
+      <canvas id="bgEffectCanvas"></canvas>
+      <div class="ambient-stars"></div>
+      <div class="ambient-stars ambient-stars-distant"></div>
+      <div class="ambient-aurora aurora-blue"></div>
+      <div class="ambient-aurora aurora-gold"></div>
+      <div class="shooting-star"></div>
+    </div>
+    <canvas id="particleCanvas"></canvas>
+    <div id="cursorTrail"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Rabbit Chase home">
+          <span class="brand-mark">RC</span>
+          <span class="brand-name">RABBIT<span>CHASE</span></span>
+        </a>
+        <div class="topbar-right">
+          <button class="shop-btn" id="shopBtn" type="button" aria-label="Open Item Shop">
+            <span class="shop-btn-icon" aria-hidden="true">🛍️</span>
+            <span class="shop-btn-label">SHOP</span>
+            <span class="shop-btn-coins" id="shopBtnCoins">0 🪙</span>
+          </button>
+          <button class="mute-btn" id="muteBtn" type="button" aria-label="Toggle sound">
+            <span id="muteIcon">🔊</span>
+          </button>
+          <span class="game-label"><span class="live-dot"></span> RABBIT CHASE</span>
+        </div>
+      </header>
+
+      <section class="game-card" aria-labelledby="game-title">
+        <div class="game-heading">
+          <div>
+            <p class="eyebrow">THE 30-SECOND HOP CHALLENGE</p>
+            <h1 id="game-title">Catch the <span>rabbit!</span></h1>
+            <p class="intro">The rabbit keeps moving. Catch it before it hops away!</p>
+          </div>
+          <div class="round-badge">
+            <span class="round-icon" aria-hidden="true">🐇</span>
+            <span>DIFFICULTY<br /><strong>LEVEL <span id="level">1</span></strong></span>
+          </div>
+        </div>
+
+        <div class="scoreboard" aria-label="Round statistics">
+          <div class="stat">
+            <span class="stat-label">SCORE</span>
+            <strong id="score">0</strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">COINS</span>
+            <strong id="coins">0</strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">TIME</span>
+            <strong class="time-value"><span id="time">30</span><small>s</small></strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">STREAK</span>
+            <strong id="streak">0<span class="streak-x">×</span></strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">COMBO</span>
+            <strong id="comboDisplay">1<span class="combo-x">×</span></strong>
+          </div>
+          <div class="stat best-stat">
+            <span class="stat-label">BEST</span>
+            <strong id="best">0</strong>
+          </div>
+        </div>
+
+        <div class="level-progress-wrap">
+          <div class="level-progress-bar" id="levelProgress"></div>
+          <span class="level-progress-label" id="levelProgressLabel">0 / 5 to Level 2</span>
+        </div>
+
+        <div
+          class="arena"
+          id="arena"
+          role="group"
+          aria-label="Rabbit-catching area. Tap the rabbit to catch it; tapping empty space counts as a miss."
+        >
+          <div class="arena-bg" id="arenaBg" aria-hidden="true">
+            <div class="bg-cloud" style="--cloud-top:12%;--cloud-dur:18s;--cloud-delay:0s;--cloud-size:60px"></div>
+            <div class="bg-cloud" style="--cloud-top:28%;--cloud-dur:22s;--cloud-delay:-7s;--cloud-size:45px"></div>
+            <div class="bg-cloud" style="--cloud-top:6%;--cloud-dur:25s;--cloud-delay:-14s;--cloud-size:55px"></div>
+            <div class="bg-butterfly" style="--bf-top:40%;--bf-left:20%;--bf-dur:6s;--bf-delay:0s"></div>
+            <div class="bg-butterfly" style="--bf-top:60%;--bf-left:70%;--bf-dur:8s;--bf-delay:-3s"></div>
+            <div class="bg-grass"></div>
+          </div>
+          <div class="arena-grid" aria-hidden="true"></div>
+          <div class="arena-lines" aria-hidden="true"></div>
+          <div class="arena-scanlines" aria-hidden="true"></div>
+          <div class="arena-vignette" aria-hidden="true"></div>
+          <div class="arena-hint" id="arenaHint">
+            <span class="hint-crosshair" aria-hidden="true">🐇</span>
+            <strong>READY WHEN YOU ARE</strong>
+            <span>The rabbit runs around the field. Tap it before it escapes!</span>
+          </div>
+          <!-- CSS Rabbit Target -->
+          <button class="target" id="target" type="button" aria-label="Rabbit — tap to catch" hidden>
+            <div class="css-rabbit" id="cssRabbit">
+              <div class="rabbit-ear rabbit-ear-l"></div>
+              <div class="rabbit-ear rabbit-ear-r"></div>
+              <div class="rabbit-head">
+                <div class="rabbit-eye rabbit-eye-l"></div>
+                <div class="rabbit-eye rabbit-eye-r"></div>
+                <div class="rabbit-nose"></div>
+                <div class="rabbit-mouth"></div>
+              </div>
+              <div class="rabbit-body"></div>
+              <div class="rabbit-tail"></div>
+              <div class="rabbit-foot rabbit-foot-l"></div>
+              <div class="rabbit-foot rabbit-foot-r"></div>
+            </div>
+          </button>
+          <div class="catch-effects" id="catchEffects" aria-hidden="true"></div>
+          <div id="footprintsLayer" class="footprints-layer" aria-hidden="true"></div>
+          <div class="arena-overlay" id="arenaOverlay">
+            <span class="overlay-rabbit" aria-hidden="true">🐇</span>
+            <strong id="overlayTitle">Catch the rabbit!</strong>
+            <span id="overlayMessage">It hops away fast.</span>
+          </div>
+          <!-- Combo announcement -->
+          <div class="combo-announce" id="comboAnnounce" aria-hidden="true"></div>
+          <!-- Fever mode overlay -->
+          <div class="fever-overlay" id="feverOverlay" aria-hidden="true">
+            <span>🔥 FEVER MODE 🔥</span>
+          </div>
+          <!-- Achievement toasts container -->
+          <div id="achievementContainer" class="achievement-container"></div>
+        </div>
+
+        <div class="game-footer">
+          <p class="game-status" id="gameStatus" aria-live="polite">
+            Ready? The rabbit won't stay still.
+          </p>
+          <button class="start-button" id="startButton" type="button">
+            <span aria-hidden="true">▶</span>
+            <span id="startButtonText">START ROUND</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- End-of-round summary modal -->
+      <div class="summary-modal" id="summaryModal" hidden>
+        <div class="summary-card" id="summaryCard">
+          <h2 class="summary-title">Round Complete!</h2>
+          <div class="summary-rating" id="summaryRating">A</div>
+          <div class="summary-new-best" id="summaryNewBest" hidden>🏆 NEW BEST! 🏆</div>
+          <div class="summary-stats">
+            <div class="summary-stat"><span>Catches</span><strong id="sumCatches">0</strong></div>
+            <div class="summary-stat"><span>Misses</span><strong id="sumMisses">0</strong></div>
+            <div class="summary-stat"><span>Accuracy</span><strong id="sumAccuracy">0%</strong></div>
+            <div class="summary-stat"><span>Best Combo</span><strong id="sumCombo">0×</strong></div>
+            <div class="summary-stat"><span>Longest Streak</span><strong id="sumStreak">0</strong></div>
+            <div class="summary-stat"><span>Coins Earned</span><strong id="sumCoins">0</strong></div>
+          </div>
+          <div class="summary-actions">
+            <button class="summary-shop-btn" id="summaryShopBtn" type="button">
+              <span>🛍️ VISIT SHOP</span>
+              <span class="summary-shop-coins">(<span id="sumShopCoins">0</span> 🪙)</span>
+            </button>
+            <button class="summary-close-btn" id="summaryCloseBtn" type="button">CONTINUE</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item Shop Modal -->
+      <div class="shop-modal" id="shopModal" hidden>
+        <div class="shop-backdrop" id="shopBackdrop"></div>
+        <div class="shop-card" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+          <div class="shop-header">
+            <div class="shop-title-group">
+              <span class="shop-header-icon" aria-hidden="true">🛍️</span>
+              <div>
+                <h2 class="shop-title" id="shopTitle">Rabbit Chase Store</h2>
+                <p class="shop-subtitle">Buy rabbit skins, perks & background effects with coins!</p>
+              </div>
+            </div>
+            <div class="shop-header-actions">
+              <div class="shop-wallet">
+                <span class="shop-wallet-label">YOUR BALANCE</span>
+                <div class="shop-wallet-amount">
+                  <span class="shop-wallet-val" id="shopModalCoins">0</span>
+                  <span class="shop-wallet-coin">🪙</span>
+                </div>
+              </div>
+              <button class="shop-close-btn" id="shopCloseBtn" type="button" aria-label="Close shop">✕</button>
+            </div>
+          </div>
+
+          <!-- Category Navigation Tabs -->
+          <div class="shop-tabs" role="tablist">
+            <button class="shop-tab active" data-tab="skins" type="button" role="tab" aria-selected="true">
+              🐇 Bunny Skins
+            </button>
+            <button class="shop-tab" data-tab="perks" type="button" role="tab" aria-selected="false">
+              ⚡ Upgrades & Perks
+            </button>
+            <button class="shop-tab" data-tab="themes" type="button" role="tab" aria-selected="false">
+              ✨ Background FX
+            </button>
+          </div>
+
+          <!-- Tab Panels -->
+          <div class="shop-content-area">
+            <div class="shop-tab-panel active" id="tabPanel-skins" role="tabpanel">
+              <div class="shop-grid" id="skinsGrid"></div>
+            </div>
+            <div class="shop-tab-panel" id="tabPanel-perks" role="tabpanel" hidden>
+              <div class="shop-grid" id="perksGrid"></div>
+            </div>
+            <div class="shop-tab-panel" id="tabPanel-themes" role="tabpanel" hidden>
+              <div class="shop-grid" id="themesGrid"></div>
+            </div>
+          </div>
+
+          <div class="shop-footer">
+            <p class="shop-tip">💡 <strong>Pro Tip:</strong> Chain catch combos and hit Fever mode to rack up coins quickly!</p>
+            <button class="shop-done-btn" id="shopDoneBtn" type="button">DONE</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="how-to-play" aria-label="How to play">
+        <div class="how-icon" aria-hidden="true">i</div>
+        <p><strong>How to play</strong><span>Catch rabbits to earn coins. Every 5 catches levels up: the rabbit gets faster and smaller! Collect power-ups and build combos for massive rewards!</span></p>
+        <span class="device-tip">TOUCH OR CLICK</span>
+      </section>
+
+      <footer class="footer">
+        <span>RABBIT CHASE</span>
+        <span>CATCH THEM QUICK · BEAT YOUR BEST · <a href="./privacy.html">PRIVACY</a></span>
+      </footer>
+    </main>
+    <script src="script.js"></script>
+    <script src="pwa.js"></script>
+  </body>
+</html>
